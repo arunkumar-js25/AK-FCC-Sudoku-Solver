@@ -5,16 +5,16 @@ class SudokuSolver {
     var lengthStr = puzzleString.length;
     //Check count is 81
     if(lengthStr != 81){
-      return false;
+      return "Expected puzzle to be 81 characters long";
     }
 
     //Loop and find the character is digit or .
     for(let i=0;i<lengthStr;i++){
       if(puzzleString[i] != "." && !(puzzleString[i] >= "1" && puzzleString[i] <= "9")){
-        return false;
+        return "Invalid characters in puzzle";
       }
     }
-    return true;
+    return "";
   }
 
   checkRowPlacement(puzzleString, row, column, value) {
@@ -58,11 +58,11 @@ class SudokuSolver {
     }
   
     let count=0;
-    console.log(rowStart);
-    console.log(colStart);
+    //console.log(rowStart);
+    //console.log(colStart);
     for(let j=rowStart;count<3;j=j+9)
     {
-      console.log(puzzleString.slice(j+colStart,j+colStart+3));
+      //console.log(puzzleString.slice(j+colStart,j+colStart+3));
       if(puzzleString[j+colStart] == value || puzzleString[j+colStart+1] == value || puzzleString[j+colStart+2] == value){
         return false;
       }
@@ -72,8 +72,40 @@ class SudokuSolver {
     return true;
   }
 
-  solve(puzzleString) {
-    
+  isComplete(puzzleString){
+    if(puzzleString.indexOf(".") >= 0){
+      return false;
+    }
+    return true;
+  }
+
+  solve(puzzleString) 
+  {
+    for(let row=0;row<9;row++){
+      for(let col=0;col<9;col++){
+        let pos = row*9 + col;
+        if(puzzleString[pos]=="."){
+          
+          let rowCode=String.fromCharCode( 65 + row );
+          for(let j=1;j<10;j++){
+            if(this.checkRowPlacement(puzzleString,rowCode,col+1,j) 
+              && this.checkColPlacement(puzzleString, rowCode, col+1, j)
+              && this.checkRegionPlacement(puzzleString, rowCode, col+1, j)){
+                puzzleString = puzzleString.substring(0, pos) + j +  puzzleString.substring(pos+1, 81);
+                puzzleString = this.solve(puzzleString);
+                if(this.isComplete(puzzleString)){
+                  return puzzleString;
+                }
+                else{
+                  puzzleString = puzzleString.substring(0, pos) + "." +  puzzleString.substring(pos+1, 81);
+                }
+              }
+          }
+          return puzzleString;
+        }
+      }
+    }
+    return puzzleString; 
   }
 }
 
