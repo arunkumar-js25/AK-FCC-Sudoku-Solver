@@ -38,7 +38,38 @@ class SudokuSolver {
   }
 
   checkRegionPlacement(puzzleString, row, column, value) {
+    let rowOrder = [["A","B","C"],["D","E","F"],["G","H","I"]];
+    let rowStart = 0;
+    for(let i=0;i<rowOrder.length;i++){
+      if(rowOrder[i].indexOf(row) == -1){
+        rowStart += 9*3;
+      }
+      else{
+        break;
+      }
+    }
+  
+    let colStart = 0;
+    if(column >= 4 && column <= 6){
+      colStart = 3;
+    }
+    else if(column >= 7 && column <= 9){
+      colStart = 6;
+    }
+  
+    let count=0;
+    console.log(rowStart);
+    console.log(colStart);
+    for(let j=rowStart;count<3;j=j+9)
+    {
+      console.log(puzzleString.slice(j+colStart,j+colStart+3));
+      if(puzzleString[j+colStart] == value || puzzleString[j+colStart+1] == value || puzzleString[j+colStart+2] == value){
+        return false;
+      }
+      count++;
+    }
     
+    return true;
   }
 
   solve(puzzleString) {
